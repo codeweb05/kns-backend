@@ -4,7 +4,7 @@
     "description": "",
     "main": "src/server.js",
     "scripts": {
-        "start": "node server",
+        "start": "node src/server",
         "lint": "eslint ./**/*.js",
         "lint-fix": "prettier-eslint ./**/*.js --write",
         "test": "jest -i",
