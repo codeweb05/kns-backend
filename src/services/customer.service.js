@@ -1,7 +1,7 @@
 'use strict';
 const httpStatus = require('http-status');
 const { Customer, User } = require('../models');
-const ApiError = require('../utils/ApiError');
+const ApiError = require('../utils/apiError');
 const { uuid } = require('uuidv4');
 const config = require('../config/config');
 

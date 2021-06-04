@@ -3,7 +3,7 @@
 const httpStatus = require('http-status');
 const { User } = require('../models');
 const bycrypt = require('bcryptjs');
-const ApiError = require('../utils/ApiError');
+const ApiError = require('../utils/apiError');
 
 const createUser = async (params) => {
 	if (await User.exists({ email: params.email })) {

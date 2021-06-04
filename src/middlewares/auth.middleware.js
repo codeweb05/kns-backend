@@ -1,6 +1,6 @@
 'use strict';
 const httpStatus = require('http-status');
-const ApiError = require('../utils/ApiError');
+const ApiError = require('../utils/apiError');
 const { roleRights } = require('../config/roles');
 const config = require('../config/config');
 const { User } = require('../models');

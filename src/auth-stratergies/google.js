@@ -3,7 +3,7 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const config = require('../config/config');
 const { User } = require('../models');
 const httpStatus = require('http-status');
-const ApiError = require('../utils/ApiError');
+const ApiError = require('../utils/apiError');
 
 module.exports = function (passport) {
 	const strategyOptions = {
