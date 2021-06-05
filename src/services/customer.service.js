@@ -53,6 +53,10 @@ const updateCustomer = async ({ stage, email }) => {
 	return await Customer.findOneAndUpdate({ email }, { stage });
 };
 
+const getManagerData = async () => {
+	return await User.find({}, { email: 1, _id: 0 });
+};
+
 const bookMeeting = async ({ time, customerId }, user) => {
 	const customer = await Customer.findOne({ _id: customerId }).lean();
 
@@ -138,5 +142,6 @@ module.exports = {
 	createCustomer,
 	getCustomers,
 	updateCustomer,
-	bookMeeting
+	bookMeeting,
+	getManagerData
 };

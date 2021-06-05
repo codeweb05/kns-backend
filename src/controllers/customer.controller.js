@@ -26,6 +26,11 @@ const bookMeeting = async (req, res) => {
 	res.status(httpStatus.OK).json({ message: 'success' });
 };
 
+const getManagerData = async (req, res) => {
+	const managerData = await customerService.getManagerData(req.body, req.user);
+	res.status(httpStatus.OK).json(managerData);
+};
+
 const bookFirstMeeting = async (req, res) => {
 	const token = req.header('Authorization').replace('Bearer ', '');
 	const decoded = jwt.verify(token, config.jwt.secret);
@@ -64,5 +69,6 @@ module.exports = {
 	updateCustomer,
 	bookMeeting,
 	bookFirstMeeting,
-	generateUrl
+	generateUrl,
+	getManagerData
 };

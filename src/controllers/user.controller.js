@@ -11,7 +11,7 @@ const getAllUsers = async (req, res) => {
 const getUser = async (req, res) => {
 	const { __v, updatedAt, createdAt, role, refresh_token, ...rest } = JSON.parse(JSON.stringify(req.user));
 	const user = { ...rest, isGoogleLogin: !!refresh_token };
-	const userData = await userService.getUserData(user._id);
+	const userData = await userService.getUserData(req.user);
 	res.status(httpStatus.OK).json({ user, ...userData });
 };
 

@@ -23,6 +23,7 @@ router.post('/google', catchAsync(customerController.generateUrl));
 
 router.post('/book', auth(), catchAsync(customerController.bookMeeting));
 
+router.get('/manager', auth(), catchAsync(customerController.getManagerData));
 router.get('/', auth(), catchAsync(customerController.getCustomers));
 
 module.exports = router;
