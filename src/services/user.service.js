@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 'use strict';
 const httpStatus = require('http-status');
-const { User } = require('../models');
+const { User, Customer } = require('../models');
 const bycrypt = require('bcryptjs');
 const ApiError = require('../utils/apiError');
 
@@ -52,9 +52,106 @@ const saveUser = async (data, _id) => {
 	return await User.findOneAndUpdate({ _id }, { ...data });
 };
 
+const getAnalytics = async (user) => {
+	const query = [];
+	if (user.role === 'user') {
+		query.push({
+			$match: {
+				manager: { $eq: user._id }
+			}
+		});
+	}
+	query.push({ $group: { _id: '$stage', count: { $sum: 1 } } });
+	const counts = await Customer.aggregate(query);
+	let total = 0;
+	const mappedCounts = {};
+	counts.forEach((count) => {
+		if (mappedCounts[count._id]) {
+			mappedCounts[count._id] += count.count;
+		} else {
+			mappedCounts[count._id] = count.count;
+		}
+		total += count.count;
+	});
+
+	// const query2 = [];
+	// if (user.role === 'user') {
+	// 	query2.push({
+	// 		$match: {
+	// 			manager: { $eq: user._id }
+	// 		}
+	// 	});
+	// }
+
+	// const monthEnd = new Date();
+	// var n = d.toISOString();
+
+	// query2.push({
+	// 	$match: {
+	// 		manager: { $eq: user._id }
+	// 	}
+	// });
+	// query2.push({ $group: { _id: '$stage', count: { $sum: 1 } } });
+
+	const grp = await Customer.aggregate([
+		{
+			$group: {
+				_id: { manager: '$manager', stage: '$stage' },
+				stages: { $push: '$stage' },
+				total: { $sum: 1 }
+			}
+		},
+		{
+			$group: {
+				_id: { manager: '$_id.manager' },
+				stage: { $addToSet: { stage: '$_id.stage', sum: '$total' } }
+			}
+		}
+	]);
+
+	// const grp = await Customer.aggregate([
+	// 	{
+	// 		$group: {
+	// 			_id: { manager: '$manager', stage: '$stage' },
+	// 			stages: { $push: '$stage' },
+	// 			total: { $sum: 1 }
+	// 		}
+	// 	},
+	// 	{
+	// 		$group: {
+	// 			_id: { manager: '$_id.manager' },
+	// 			stage: { $addToSet: { stage: '$_id.stage', sum: '$total' } }
+	// 		}
+	// 	}
+	// ]);
+	return {
+		totalCounts: { ...mappedCounts, total },
+		monthlyCounts: {},
+		yearlyCounts: grp
+	};
+};
+
+const getUserData = async (id) => {
+	const meetingData = await Customer.find(
+		{
+			manager: id,
+			meetingLink: { $nin: [null, ''] }
+		},
+		{ meetingLink: 1, meetingStart: 1, _id: 0, name: 1 }
+	)
+		.sort({ meetingStart: 1 })
+		.lean();
+	return {
+		meetingData,
+		slotData: {}
+	};
+};
+
 module.exports = {
 	createUser,
 	login,
 	getAllUsers,
-	saveUser
+	saveUser,
+	getAnalytics,
+	getUserData
 };

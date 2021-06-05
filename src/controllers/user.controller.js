@@ -10,7 +10,9 @@ const getAllUsers = async (req, res) => {
 
 const getUser = async (req, res) => {
 	const { __v, updatedAt, createdAt, role, refresh_token, ...rest } = JSON.parse(JSON.stringify(req.user));
-	res.status(httpStatus.OK).json({ ...rest, isGoogleLogin: !!refresh_token });
+	const user = { ...rest, isGoogleLogin: !!refresh_token };
+	const userData = await userService.getUserData(user._id);
+	res.status(httpStatus.OK).json({ user, ...userData });
 };
 
 const saveUser = async (req, res) => {
@@ -18,8 +20,14 @@ const saveUser = async (req, res) => {
 	res.status(httpStatus.CREATED).json({ message: 'success' });
 };
 
+const getAnalytics = async (req, res) => {
+	const analytics = await userService.getAnalytics(req.user);
+	res.status(httpStatus.OK).json(analytics);
+};
+
 module.exports = {
 	getAllUsers,
 	getUser,
-	saveUser
+	saveUser,
+	getAnalytics
 };

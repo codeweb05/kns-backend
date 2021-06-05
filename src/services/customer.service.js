@@ -26,7 +26,7 @@ const createCustomer = async (params, id) => {
 	return await Customer.create({ ...params });
 };
 
-const getCustomers = async (query) => {
+const getCustomers = async (query, user) => {
 	const searchText = query.searchText;
 	const page = query.page;
 	const limit = query.limit;
@@ -35,6 +35,9 @@ const getCustomers = async (query) => {
 	const queryDB = { email: { $regex: '.*' + searchText + '.*' } };
 	if (query.isDashboard) {
 		queryDB.createdAt = { $gt: Date.now() - 86400000 * 14 };
+	}
+	if (user.role === 'user') {
+		queryDB.manager = user._id;
 	}
 	const customers = await Customer.find(queryDB).populate('manager').lean();
 	const total = customers.length;
@@ -128,7 +131,7 @@ const bookMeeting = async ({ time, customerId }, user) => {
 	}
 
 	// If event array is not empty log that we are busy.
-	return new ApiError(httpStatus.BAD_REQUEST, "Sorry I'm busy...");
+	throw new ApiError(httpStatus.BAD_REQUEST, "Sorry I'm busy...");
 };
 
 module.exports = {

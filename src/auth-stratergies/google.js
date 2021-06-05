@@ -15,9 +15,7 @@ module.exports = function (passport) {
 		const email = profile.emails[0].value;
 		const user = await User.findOne({ email });
 		if (user) {
-			user.refresh_token = refreshToken;
-			user.save();
-			done(null, user);
+			done(null, refreshToken);
 		} else {
 			done(new ApiError(httpStatus.BAD_REQUEST, 'Please use same account'), null);
 		}

@@ -24,7 +24,7 @@ const customerSchema = new mongoose.Schema(
 		},
 		stage: {
 			type: String,
-			enum: ['inserted', 'contacted', 'demo', 'qualified', 'unqualified'],
+			enum: ['interested', 'contacted', 'demo', 'qualified', 'unqualified'],
 			default: 'demo',
 			required: true
 		},

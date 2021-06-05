@@ -3,6 +3,8 @@ const httpStatus = require('http-status');
 const querystring = require('querystring');
 const { customerService } = require('../services');
 const config = require('../config/config');
+const { User } = require('../models');
+const jwt = require('jsonwebtoken');
 
 const createCustomer = async (req, res) => {
 	await customerService.createCustomer(req.body, req.user._id);
@@ -10,7 +12,7 @@ const createCustomer = async (req, res) => {
 };
 
 const getCustomers = async (req, res) => {
-	const customers = await customerService.getCustomers(req.query);
+	const customers = await customerService.getCustomers(req.query, req.user);
 	res.status(httpStatus.OK).json(customers);
 };
 
@@ -25,7 +27,15 @@ const bookMeeting = async (req, res) => {
 };
 
 const bookFirstMeeting = async (req, res) => {
-	await customerService.bookMeeting(JSON.parse(req.query.state), req.user);
+	const token = req.header('Authorization').replace('Bearer ', '');
+	const decoded = jwt.verify(token, config.jwt.secret);
+	const user = await User.findOne({
+		_id: decoded._id,
+		'tokens.token': token
+	});
+	user.refresh_token = req.user;
+	user.save();
+	await customerService.bookMeeting(JSON.parse(req.query.state), user);
 	res.status(httpStatus.OK).json({ message: 'success' });
 };
 

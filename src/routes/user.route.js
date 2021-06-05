@@ -9,5 +9,6 @@ const router = express.Router();
 router.get('/', auth(), userController.getUser);
 router.post('/', auth(), userController.saveUser);
 router.get('/all', auth('manageUsers'), userController.getAllUsers);
+router.get('/analytics', auth(), userController.getAnalytics);
 
 module.exports = router;
