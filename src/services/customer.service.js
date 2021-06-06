@@ -125,7 +125,7 @@ const bookMeeting = async ({ time, customerId }, user) => {
 			conferenceDataVersion: 1
 		});
 
-		await Customer.findOneAndUpdate(
+		return await Customer.findOneAndUpdate(
 			{ _id: customerId },
 			{
 				meetingLink: calenderInsertRes.data.hangoutLink,
